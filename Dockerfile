@@ -13,13 +13,19 @@ RUN mkdir /tmp/build \
 
 FROM alpine:latest
 
-COPY --from=builder /tmp/build/yggdrasil-go/yggdrasil /usr/bin/yggdrasil
-COPY --from=builder /tmp/build/yggdrasil-go/yggdrasilctl /usr/bin/yggdrasilctl
-COPY --from=builder /tmp/build/yggdrasil-go/genkeys /usr/bin/genkeys
-COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN mkdir -p /etc/yggdrasil-network /opt/yggdrasil-network \
+	&& chown -R nobody: /etc/yggdrasil-network \
+ 	&& chown -R nobody: /opt/yggdrasil-network
+	
+WORKDIR /opt/yggdrasil-network
 
-RUN chmod +x /usr/bin/entrypoint.sh
+COPY --from=builder --chown=nobody:nogroup /tmp/build/yggdrasil-go/yggdrasil ./yggdrasil
+COPY --from=builder --chown=nobody:nogroup /tmp/build/yggdrasil-go/yggdrasilctl ./yggdrasilctl
+COPY --from=builder --chown=nobody:nogroup /tmp/build/yggdrasil-go/genkeys ./genkeys
+COPY entrypoint.sh ./entrypoint.sh
+
+RUN chmod +x ./entrypoint.sh
 
 VOLUME [ "/etc/yggdrasil-network" ]
 
-ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
