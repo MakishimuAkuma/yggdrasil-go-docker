@@ -1,4 +1,4 @@
-FROM alpine:latest AS builder
+FROM --platform=$BUILDPLATFORM alpine:latest AS builder
 
 RUN apk update \
 	&& apk upgrade --available --no-cache \
@@ -11,7 +11,7 @@ RUN mkdir /tmp/build \
 	&& ./build \
 	&& go build -o genkeys cmd/genkeys/main.go
 
-FROM alpine:latest
+FROM --platform=$BUILDPLATFORM alpine:latest
 
 COPY --from=builder /tmp/build/yggdrasil-go/yggdrasil /usr/bin/yggdrasil
 COPY --from=builder /tmp/build/yggdrasil-go/yggdrasilctl /usr/bin/yggdrasilctl
