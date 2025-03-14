@@ -6,7 +6,7 @@ RUN apk update \
 
 RUN mkdir /tmp/build \
 	&& cd /tmp/build \
-	&& git clone https://github.com/yggdrasil-network/yggdrasil-go.git \
+	&& git clone --depth 1 --branch v0.5.12 https://github.com/yggdrasil-network/yggdrasil-go.git \
 	&& cd yggdrasil-go \
 	&& ./build \
 	&& go build -o genkeys cmd/genkeys/main.go
