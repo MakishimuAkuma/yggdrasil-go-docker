@@ -1,5 +1,7 @@
 FROM golang:alpine AS builder
 
+RUN apk update && apk add git
+
 RUN mkdir /tmp/build \
 	&& cd /tmp/build \
 	&& git clone --depth 1 --branch v0.5.12 https://github.com/yggdrasil-network/yggdrasil-go.git \
