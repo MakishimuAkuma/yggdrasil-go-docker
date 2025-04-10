@@ -1,20 +1,19 @@
-FROM golang:alpine AS builder
+FROM docker.io/golang:alpine AS builder
 
-RUN apk update && apk add git
+ENV CGO_ENABLED=0
 
-RUN mkdir /tmp/build \
-	&& cd /tmp/build \
-	&& git clone --depth 1 --branch v0.5.12 https://github.com/yggdrasil-network/yggdrasil-go.git \
-	&& cd yggdrasil-go \
-	&& ./build \
-	&& go build -o genkeys cmd/genkeys/main.go
+WORKDIR /tmp/build
 
-FROM busybox:stable-glibc
+ADD https://github.com/yggdrasil-network/yggdrasil-go.git#v0.5.12 .
 
-COPY --from=builder /tmp/build/yggdrasil-go/yggdrasil /usr/bin/yggdrasil
-COPY --from=builder /tmp/build/yggdrasil-go/yggdrasilctl /usr/bin/yggdrasilctl
-COPY --from=builder /tmp/build/yggdrasil-go/genkeys /usr/bin/genkeys
-COPY entrypoint.sh /entrypoint.sh
+RUN ./build && go build -o genkeys cmd/genkeys/main.go
+
+FROM docker.io/alpine:latest
+
+COPY --from=builder /tmp/build/yggdrasil /usr/bin/yggdrasil
+COPY --from=builder /tmp/build/yggdrasilctl /usr/bin/yggdrasilctl
+COPY --from=builder /tmp/build/genkeys /usr/bin/genkeys
+COPY ./entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
