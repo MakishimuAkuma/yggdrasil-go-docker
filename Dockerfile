@@ -1,4 +1,4 @@
-FROM golang:latest AS builder
+FROM golang:alpine AS builder
 
 RUN mkdir /tmp/build \
 	&& cd /tmp/build \
