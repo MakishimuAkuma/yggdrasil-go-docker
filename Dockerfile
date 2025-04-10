@@ -1,8 +1,4 @@
-FROM alpine:latest AS builder
-
-RUN apk update \
-	&& apk upgrade --available --no-cache \
-	&& apk --no-cache --virtual build-dependendencies add git go
+FROM golang:latest AS builder
 
 RUN mkdir /tmp/build \
 	&& cd /tmp/build \
@@ -11,7 +7,7 @@ RUN mkdir /tmp/build \
 	&& ./build \
 	&& go build -o genkeys cmd/genkeys/main.go
 
-FROM alpine:latest
+FROM busybox:stable-glibc
 
 COPY --from=builder /tmp/build/yggdrasil-go/yggdrasil /usr/bin/yggdrasil
 COPY --from=builder /tmp/build/yggdrasil-go/yggdrasilctl /usr/bin/yggdrasilctl
