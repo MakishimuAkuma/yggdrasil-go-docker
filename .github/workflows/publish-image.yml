@@ -1,6 +1,7 @@
 name: Publish yggdrasil-go-docker to Docker HUB
 on:
-  push:
+  schedule:
+    - cron: '0 0 8-14,22-28 * *'
 
 jobs:
   docker:
